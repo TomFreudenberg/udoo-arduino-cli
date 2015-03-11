@@ -1,3 +1,94 @@
+
+ARDUINO 1.6.1 - 2015.03.10
+
+[ide]
+* Improved Yun detection for upload via network (Ron Guest)
+* In platforms.txt "objcopy" recipe is no more tied to the "hex" format (Arnav Gupta)
+* /dev/cu.* serial ports are now filtered from the port list on MacOSX
+* Ports in ports list are now grouped by type
+* Upgraded avr-gcc toolchains to 3.4.5
+* Fixed: wrong parsing of boards.txt when using submenu and boards id with underscores
+* Windows: updated bundled JVM to latest 8u31
+* Windows: JVM memory settings can be customized editing arduino.l4j.ini and arduino_debug.l4j.ini files
+* "new" button now behaves as "File -> New..." menu: a new window with an empty sketch is created
+* Windows: opening a lonely sketch caused the IDE to crash. Fixed with a bounty on bountysource @gerito1
+* Bridge: fixed bug with multiple and failing YunClient.connect calls @sngl
+* Translations updated
+* Improved SoftSerial library and optimized its memory usage @matthijskooijman
+* Fixed: status board was not changing when using custom menu @PaulStoffregen
+* Fixed: better error message when using a busy serial device
+* Fixed: missing bool operator on EthernetClient
+* Fixed: missing bool operator on SoftSerial
+* MacOSX: back to native file dialogs and buttons, when using experimental version
+* MacOSX: command line interface now works also with java-latest version
+* Improved library name matching @PaulStoffregen. Avoids conflicts with libraries that bundle files equally named
+
+ARDUINO 1.6.0 - 2015.02.09
+
+[ide]
+* Updated help with the latest docs
+* Updated translations
+
+ARDUINO 1.6.0rc3 - 2015.02.03
+
+[ide]
+* Bunch of bugfix on MacOSX build (https://github.com/arduino/Arduino/pull/2590)
+
+ARDUINO 1.6.0rc2 - 2015.01.20
+
+[ide]
+* Reenabled speed of 38400 on serial monitor
+* Improved Find/Replace dialog layout (Eberhard Fahle)
+* Fixed missing .dll error on some Windows box
+
+[core]
+* Arduino "boolean" type is now mapped to "bool" instead of "uint8_t" (Christopher Andrews)
+* sam: HardwareSerial now has buffered transmission (Collin Kidder)
+* sam: HardwareSerial fixed modes (parity, data bits, stop bits) (bluesign2k)
+* avr: Fixed regression in pulseIn() function accuracy
+
+[libraries]
+* GSM: minor changes and bug fix (https://github.com/arduino/Arduino/pull/2546)
+
+The following changes are included also in the Arduino IDE 1.0.7:
+
+[ide]
+* Mitigated Serial Monitor resource exhaustion when the connected device sends a lot of data (Paul Stoffregen)
+
+ARDUINO 1.6.0rc1 - 2014.12.11
+
+* IDE internals have been refactored and sorted out. (Claudio Indellicati)
+  https://github.com/arduino/Arduino/pull/2328
+  The builder and the GUI now have clearly separated source code making it easier
+  for IDE developers to maintain and propose patch.
+  From a user point of view nothing changes and the IDE should behave exactly as before.
+
+[ide]
+* Autosave on sketch Upload/Verify (Fulvio Ieva)
+* Sketch build process: fixed full rebuild on windows even if not needed
+* Sketch build process: core.a rebuild only if needed (Matthijs Kooijman)
+* Updated AStyle formatter to v2.05: http://astyle.sourceforge.net/notes.html
+* Improved avrdude verbose upload (Matthijs Kooijman)
+* (Mac OSX) Add Exported UTI for ino files, allows quick look to view the
+  content of the file and external editors to syntax highlight as C++ (Matt Lloyd)
+
+[core]
+* sam: added -MMD flag to let gcc produce dependency files (full rebuild on Arduino Due is now triggered only if needed)
+
+[libraries]
+* LiquidCrystal: added setRowOffsets function to support different LCD hardware configurations (Mark Sproul)
+* LiquidCrystal: various improvements and optimizations (Matthijs Kooijman)
+* Fixed PROGMEM error in Robot_Control/examples/explore/R06_Wheel_Calibration
+* SD: Fixed SPI transaction mismatch (Paul Stoffregen)
+
+The following changes are included also in the Arduino IDE 1.0.7:
+
+[libraries]
+* EthernetClien: use IANA recommended ephemeral port range, 49152-65535 (Jack Christensen, cifer-lee)
+
+[core]
+* Fixed regression in HardwareSerial::available() introduced with https://github.com/arduino/Arduino/pull/2057
+
 ARDUINO 1.5.8 BETA - 2014.10.01
 
 [ide]
@@ -328,6 +419,23 @@ ARDUINO 1.5 BETA - 2012.10.22
   or incomplete.
 * For more info refer to this press release:
   http://arduino.cc/blog/2012/10/22/arduino-1-5-support-for-the-due-and-other-processors-easier-library-installation-simplified-board-menu-etc/
+
+ARDUINO 1.0.7
+
+[libraries]
+* Backported SPI Transaction API from IDE 1.5.x (Paul Stoffregen)
+* Backported GSM from IDE 1.5.x: fix build regression
+* Backported Ethernet from IDE 1.5.x
+* Backported SD from IDE 1.5.x
+* Backported SPI from IDE 1.5.x
+* EthernetClient: use IANA recommended ephemeral port range, 49152-65535 (Jack Christensen, cifer-lee)
+
+[core]
+* Fixed missing NOT_AN_INTERRUPT constant in digitalPinToInterrupt() macro
+* Fixed performance regression in HardwareSerial::available() introduced with https://github.com/arduino/Arduino/pull/2057
+
+[ide]
+* Mitigated Serial Monitor resource exhaustion when the connected device sends a lot of data (Paul Stoffregen)
 
 ARDUINO 1.0.6 - 2014.09.16
 
