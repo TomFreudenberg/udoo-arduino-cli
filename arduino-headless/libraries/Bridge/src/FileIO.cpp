@@ -26,7 +26,7 @@ File::File(BridgeClass &b) : mode(255), bridge(b) {
 
 File::File(const char *_filename, uint8_t _mode, BridgeClass &b) : mode(_mode), bridge(b) {
   filename = _filename;
-  char modes[] = {'r','w','a'};
+  char modes[] = {'r', 'w', 'a'};
   uint8_t cmd[] = {'F', modes[mode]};
   uint8_t res[2];
   dirPosition = 1;
@@ -53,12 +53,12 @@ size_t File::write(uint8_t c) {
 
 size_t File::write(const uint8_t *buf, size_t size) {
   if (mode == 255)
-	return -1;
+    return -1;
   uint8_t cmd[] = {'g', handle};
   uint8_t res[1];
   bridge.transfer(cmd, 2, buf, size, res, 1);
   if (res[0] != 0) // res[0] contains error code
-	return -res[0];
+    return -res[0];
   return size;
 }
 
@@ -91,7 +91,7 @@ boolean File::seek(uint32_t position) {
   };
   uint8_t res[1];
   bridge.transfer(cmd, 6, res, 1);
-  if (res[0]==0) {
+  if (res[0] == 0) {
     // If seek succeed then flush buffers
     buffered = 0;
     return true;
@@ -119,12 +119,15 @@ void File::doBuffer() {
   // Try to buffer up to BUFFER_SIZE characters
   readPos = 0;
   uint8_t cmd[] = {'G', handle, BUFFER_SIZE - 1};
-  buffered = bridge.transfer(cmd, 3, buffer, BUFFER_SIZE) - 1;
+  buffered = bridge.transfer(cmd, 3, buffer, BUFFER_SIZE);
   //err = buff[0]; // First byte is error code
-  if (buffered>0) {
-    // Shift the reminder of buffer
-    for (uint8_t i=0; i<buffered; i++)
-      buffer[i] = buffer[i+1];
+  if (BridgeClass::TRANSFER_TIMEOUT == buffered || 0 == buffered) {
+    // transfer failed to retrieve any data
+    buffered = 0;
+  } else {
+    // transfer retrieved at least one byte of data so skip the error code character
+    readPos++;
+    buffered--;
   }
 }
 
@@ -137,9 +140,36 @@ int File::available() {
 void File::flush() {
 }
 
-//int read(void *buf, uint16_t nbyte)
+int File::read(void *buff, uint16_t nbyte) {
+  uint16_t n = 0;
+  uint8_t *p = reinterpret_cast<uint8_t *>(buff);
+  while (n < nbyte) {
+    if (buffered == 0) {
+      doBuffer();
+      if (buffered == 0)
+        break;
+    }
+    *p++ = buffer[readPos++];
+    buffered--;
+    n++;
+  }
+  return n;
+}
 
-//uint32_t size()
+uint32_t File::size() {
+  if (bridge.getBridgeVersion() < 101)
+	return 0;
+  uint8_t cmd[] = {'t', handle};
+  uint8_t buff[5];
+  bridge.transfer(cmd, 2, buff, 5);
+  //err = res[0]; // First byte is error code
+  uint32_t res;
+  res  = ((uint32_t)buff[1]) << 24;
+  res |= ((uint32_t)buff[2]) << 16;
+  res |= ((uint32_t)buff[3]) << 8;
+  res |= ((uint32_t)buff[4]);
+  return res;
+}
 
 void File::close() {
   if (mode == 255)
@@ -166,7 +196,7 @@ boolean File::isDirectory() {
 }
 
 
-File File::openNextFile(uint8_t mode){
+File File::openNextFile(uint8_t mode) {
   Process awk;
   char tmp;
   String command;
@@ -178,26 +208,26 @@ File File::openNextFile(uint8_t mode){
   command += " | awk 'NR==";
   command += dirPosition;
   command += "'";
-  
+
   awk.runShellCommand(command);
 
-  while(awk.running()); 
+  while (awk.running());
 
   command = "";
 
-  while (awk.available()){
+  while (awk.available()) {
     tmp = awk.read();
-    if (tmp!='\n') command += tmp;
+    if (tmp != '\n') command += tmp;
   }
   if (command.length() == 0)
     return File();
   dirPosition++;
   filepath = filename + "/" + command;
-  return File(filepath.c_str(),mode);
-  
-} 
+  return File(filepath.c_str(), mode);
 
-void File::rewindDirectory(void){
+}
+
+void File::rewindDirectory(void) {
   dirPosition = 1;
 }
 

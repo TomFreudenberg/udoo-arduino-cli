@@ -5,7 +5,7 @@
  spacebrew data types, and a custom data type. Every time data is 
  received it is output to the Serial monitor.
 
- Make sure that your Yun is connected to the internet for this example 
+ Make sure that your Yún is connected to the internet for this example
  to function properly.
  
  The circuit:
@@ -66,7 +66,8 @@ void setup() {
 
 	// connect to cloud spacebrew server at "sandbox.spacebrew.cc"
 	sb.connect("sandbox.spacebrew.cc"); 
-
+	// we give some time to arduino to connect to sandbox, otherwise the first sb.monitor(); call will give an error
+	delay(1000);
 } 
 
 
@@ -92,6 +93,7 @@ void loop() {
 
 		}
 	}
+	delay(1000);
 } 
 
 // define handler methods, all standard data type handlers take two appropriate arguments

@@ -1,0 +1,7 @@
+/* Generated automatically. */
+static const char configuration_arguments[] = "/build/buildd/gcc-arm-none-eabi-4-8-2013q4/src/gcc/configure --target=arm-none-eabi --prefix=/build/buildd/gcc-arm-none-eabi-4-8-2013q4/install-native --libexecdir=/build/buildd/gcc-arm-none-eabi-4-8-2013q4/install-native/lib --infodir=/build/buildd/gcc-arm-none-eabi-4-8-2013q4/install-native/share/doc/gcc-arm-none-eabi/info --mandir=/build/buildd/gcc-arm-none-eabi-4-8-2013q4/install-native/share/doc/gcc-arm-none-eabi/man --htmldir=/build/buildd/gcc-arm-none-eabi-4-8-2013q4/install-native/share/doc/gcc-arm-none-eabi/html --pdfdir=/build/buildd/gcc-arm-none-eabi-4-8-2013q4/install-native/share/doc/gcc-arm-none-eabi/pdf --enable-languages=c,c++ --enable-plugins --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-gnu-as --with-gnu-ld --with-newlib --with-headers=yes --with-python-dir=share/gcc-arm-none-eabi --with-sysroot=/build/buildd/gcc-arm-none-eabi-4-8-2013q4/install-native/arm-none-eabi --with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' --with-pkgversion='GNU Tools for ARM Embedded Processors' --with-multilib-list=armv6-m,armv7-m,armv7e-m,armv7-r";
+static const char thread_model[] = "single";
+
+static const struct {
+  const char *name, *value;
+} configure_default_options[] = { { NULL, NULL} };
