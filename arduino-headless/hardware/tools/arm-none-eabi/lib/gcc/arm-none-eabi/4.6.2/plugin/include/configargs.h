@@ -1,0 +1,7 @@
+/* Generated automatically. */
+static const char configuration_arguments[] = "/mnt/toolchain/gcc-arm-none-eabi-4_6-2012q2-20120614/src/gcc/configure --build=arm-linux-gnu --host=arm-linux-gnu --target=arm-none-eabi --prefix=/mnt/toolchain/gcc-arm-none-eabi-4_6-2012q2-20120614/install-linux --enable-languages=c,c++ --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-lto --disable-nls --disable-shared --disable-threads --disable-multilibs --disable-tls --with-gnu-as --with-gnu-ld --with-newlib --with-headers=yes --with-sysroot=/mnt/toolchain/gcc-arm-none-eabi-4_6-2012q2-20120614/install-linux/arm-none-eabi --with-gmp=/mnt/toolchain/gcc-arm-none-eabi-4_6-2012q2-20120614/build-linux/host-libs/usr --with-mpfr=/mnt/toolchain/gcc-arm-none-eabi-4_6-2012q2-20120614/build-linux/host-libs/usr --with-mpc=/mnt/toolchain/gcc-arm-none-eabi-4_6-2012q2-20120614/build-linux/host-libs/usr --with-ppl=/mnt/toolchain/gcc-arm-none-eabi-4_6-2012q2-20120614/build-linux/host-libs/usr --with-cloog=/mnt/toolchain/gcc-arm-none-eabi-4_6-2012q2-20120614/build-linux/host-libs/usr --with-libelf=/mnt/toolchain/gcc-arm-none-eabi-4_6-2012q2-20120614/build-linux/host-libs/usr --with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' --with-pkgversion='GNU Tools for ARM Embedded Processors'";
+static const char thread_model[] = "single";
+
+static const struct {
+  const char *name, *value;
+} configure_default_options[] = { { NULL, NULL} };

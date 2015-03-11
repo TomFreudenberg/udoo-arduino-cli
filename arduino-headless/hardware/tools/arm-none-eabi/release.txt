@@ -1,0 +1,129 @@
+Release notes for 
+*************************************************
+GNU Tools for ARM Embedded Processors
+                           - June 2012
+*************************************************
+
+This release includes the following items:
+* Bare metal EABI pre-built binaries for running on a Windows host
+* Bare metal EABI pre-built binaries for running on a Linux host
+* Source code package (together with build scripts and instructions to setup
+  build environment), composed of:
+  * gcc : ARM/embedded-4_6-branch revision 188521
+    http://gcc.gnu.org/svn/gcc/branches/ARM/embedded-4_6-branch/
+
+  * binutils : 2.21 with mainline backports
+    git://sourceware.org/git/binutils.git
+
+  * newlib : 1.19 with mainline backports
+    ftp://sources.redhat.com/pub/newlib/newlib-1.19.0.tar.gz
+
+  * gdb : 7.3.1 with mainline backports, without target sim support
+    git://sourceware.org/git/gdb.git
+
+  * cloog-ppl 0.15.11 : 
+    ftp://gcc.gnu.org/pub/gcc/infrastructure/cloog-ppl-0.15.11.tar.gz
+
+  * expat 2.0.1 :
+    http://space.dl.sourceforge.net/project/expat/expat/2.0.1/expat-2.0.1.tar.gz
+
+  * gmp 4.3.2 : ftp://gcc.gnu.org/pub/gcc/infrastructure/gmp-4.3.2.tar.bz2
+
+  * libelf 0.8.13 : http://www.mr511.de/software/libelf-0.8.13.tar.gz
+
+  * libiconv 1.11.1 :
+    http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.11.1.tar.gz
+
+  * mpc 0.8.1 : ftp://gcc.gnu.org/pub/gcc/infrastructure/mpc-0.8.1.tar.gz
+
+  * mpfr 2.4.2 : ftp://gcc.gnu.org/pub/gcc/infrastructure/mpfr-2.4.2.tar.bz2
+
+  * ppl 0.11 : ftp://gcc.gnu.org/pub/gcc/infrastructure/ppl-0.11.tar.gz
+
+  * zlib 1.2.5 with makefile patch : 
+    http://sourceforge.net/projects/libpng/files/zlib/1.2.5/zlib-1.2.5.tar.bz2/download
+
+  * ncurses 5.9 :
+    http://ftp.gnu.org/pub/gnu/ncurses/ncurses-5.9.tar.gz
+
+Supported hosts:
+* Windows XP/7 32/64 bits (with installer)
+* Linux 32/64 bits (tarball)
+  - Ubuntu 8.x/9.x/10.x
+  - RHEL 4/5
+
+Supported target OS:
+* Bare metal EABI only
+
+Features:
+* All GCC 4.6 features, plus latest mainline features
+  * Cortex-M0+/M0/M1/M3 support
+  * Cortex-M4 with hard float multilib support
+  * Cortex-R4/R5 with hard float multilib support
+  * Fixed point fraction support
+
+Tests:
+* Tested on a variety of Cortex-M0/M3/M4 boards
+* Tested on Qemu
+
+Important bugs fixed in 4.6 update 2012.6 release:
+* Fix gdb failed to set a breakpoint on Windows
+  http://sourceware.org/bugzilla/show_bug.cgi?id=12843
+* Fix Internal Compiler Errors
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=49049
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51768
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51915
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51466
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51070
+* misplaced memory barrier
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=48126
+* Wrong code for ARMv4T and stmia
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=49641
+* Miscompilation in *minmax_arithsi
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51408
+* Incorrect code produced for tail-call of weak function
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51643
+* Compiler dead loop when using cold attribute
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=48600
+* Fix 4.7 build 4.6 problem
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51969
+* Fix one "branch out of range" error
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52294
+* Fix 'offsetof' to a non-constant address
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50608
+* Wrong code when with thumb mode memcpy
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50106
+* Undesirable folding in "m" constrained asm operands
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50571
+* Fix optimizing volatile data
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50472
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50078
+* Fix endless recursion in phi_translate
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51042
+* Fix unaligned memory accesses generated for memcpy
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50569
+
+Known major issues in 4.6 update 2012.6 release:
+* GDB on Windows may hang if gdb server is connected via a pipe and sends
+  message from stderr before stdout. This issue should be fixed in next
+  release. Work around is either not using stderr via pipe, or sending
+  stderr after stdout. Refer to:
+  http://sourceware.org/bugzilla/show_bug.cgi?id=14329
+
+Important bugs fixed in 4.6 update 2012.3 release:
+* C++ global constructor not invoked
+* A fixed point faction test failure
+* Solved problem when building library with -ffunction-sections
+* ARM EABI violation when passing arguments to helper functions
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51835
+* Updated the Binutils to correctly merge the DIV attributes from
+  different binaries.
+
+Important bugs fixed in 4.6 major 2011.12 release:
+* Incorrect stack variable access after stack pointer restored.
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=38644
+* Incorrect armv7-m epilogue of interrupt handler
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=49437
+* Access unaligned packed structure members
+* Strict volatile bitfield bug
+  http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51200
