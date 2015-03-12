@@ -403,7 +403,9 @@ function __cleanup() {
   # save exit code
   EXIT_CODE=$?
   # Exit Handler deaktivieren
-  trap - 0
+  for sig in 0 1 2 3 6 14 15 EXIT; do
+    trap - $sig
+  done
   # check to remove build path
   [[ "${OPT_CLEAN_BUILD_PATH}" == true ]] && rm -rf "${BUILD_PATH}"
   # Skript beenden
@@ -411,7 +413,7 @@ function __cleanup() {
 }
 
 # add exit code handler
-for sig in 0 1 2 3 6 14 15; do
+for sig in 0 1 2 3 6 14 15 EXIT; do
   trap "__cleanup $sig" $sig
 done
 
