@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# Debian installation script :: prerm
+#
+
+exit 0;
+

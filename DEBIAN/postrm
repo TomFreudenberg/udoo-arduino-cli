@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# Debian installation script :: postrm
+#
+
+# drop symbolic link to builder script
+rm -f /usr/local/bin/udoo-arduino-build
+
+exit 0;

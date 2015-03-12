@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# Debian installation script :: preinst
+#
+
+exit 0;

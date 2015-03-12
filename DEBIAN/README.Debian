@@ -1,0 +1,7 @@
+udoo-arduino-cli
+------------------------
+
+command line environment to build and flash arduino sketches from within udoo linux console.
+
+ -- Tom Freudenberg <ppa-manager@localhost.domain>
+ 

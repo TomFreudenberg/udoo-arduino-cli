@@ -1,0 +1,70 @@
+#!/bin/bash
+#
+
+###
+### build-dpkg-deb to build standard debian package
+###
+
+# check project settings
+BASE_PATH="$(dirname ${0})"
+if [[ ! -d "${BASE_PATH}/DEBIAN" || ! -f "${BASE_PATH}/DEBIAN/control" ]]
+then
+  echo "No DEBIAN control folder found!"
+  exit 1;
+fi
+
+__get_control_value() {
+  # $1 = name of Option and Variable
+  eval ${1}=$(grep "^${1}:" "${BASE_PATH}/DEBIAN/control" | sed -e "s/^${1}:\s*//")
+}
+
+__get_control_value Package
+__get_control_value Version
+__get_control_value Architecture
+
+DEBNAME="${Package}-${Version}_${Architecture}.deb"
+
+__cleanup() {
+  # deactivate cleanup
+  trap - 0 1 2 3 6 15 EXIT
+  # drop archive files if exist
+  for arch_file in debian-binary control.tar.gz data.tar.xz; do
+    rm -f "${BASE_PATH}/${arch_file}"
+  done
+  # back to stored path
+  cd "${CUR_PATH}"
+}
+
+# save current location
+CUR_PATH=$(pwd)
+
+# get full path info
+cd "${BASE_PATH}"
+BASE_PATH=$(pwd)
+
+# activate cleanup procedure
+trap __cleanup 0 1 2 3 6 15 EXIT
+
+# build deb content manually
+echo "2.0" > "${BASE_PATH}/debian-binary"
+
+cd "${BASE_PATH}/DEBIAN"
+echo -e "Create control archive ...\c"
+tar -czf "${BASE_PATH}/control.tar.gz" .
+echo " done"
+
+cd "${BASE_PATH}"
+echo -e "Create data archive ... (may take some time) ...\c"
+tar -cJf "${BASE_PATH}/data.tar.xz" usr
+echo " done"
+
+# build deb package
+cd "${BASE_PATH}"
+echo -e "Create package ...\c"
+ar r "${DEBNAME}" debian-binary control.tar.gz data.tar.xz
+echo " done"
+
+# finished
+echo "Package ${DEBNAME} was built."
+
+exit 0
