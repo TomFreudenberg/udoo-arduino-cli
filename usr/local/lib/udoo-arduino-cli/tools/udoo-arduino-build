@@ -453,10 +453,10 @@ for sig in 0 1 2 3 6 14 15 EXIT; do
 done
 
 # create and check build path
-mkdir -p "${BUILD_PATH}" && [[ -d "${BUILD_PATH}" ]] || __error "Error build destination: path not available or accesible [${BUILD_PATH}]!"
+[[ -n "${SOURCE_FILES}" ]] && mkdir -p "${BUILD_PATH}" && [[ -d "${BUILD_PATH}" ]] || __error "Error build destination: path not available or accesible [${BUILD_PATH}]!"
 
 # check action to build
-[[ "${SOURCE_FILES}" != "" ]] && __build ${SOURCE_FILES}
+[[ -n "${SOURCE_FILES}" ]] && __build ${SOURCE_FILES}
 
 # check action for copy binary
 [[ "${OPT_COPY_SKETCH_BIN}" == true ]] && __copy_binary ${BINARY_FILES}
