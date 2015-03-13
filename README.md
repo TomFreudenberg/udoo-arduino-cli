@@ -84,11 +84,11 @@ Run the flashing process after build or as action
 
 ##### -I \<include-path\>
 
-Append additional folders to INCLUDES path for compiling your sketch.ino. Path may be relative, if you divided your source into several pieces, you may include the project folder like ` -I . `
+Append additional folders to INCLUDES path for compiling your sketch.ino. Path may be relative or absolute. If you divided your source into several pieces, you may include custom library folders like ` -I ./my_libs `
 
 ##### -L \<library.cpp\>
 
-Add necessary standard libraries to your project. Correct library path is automatically located by searching the libraries main .cpp-file. If you need the Servo library, you can add it just by `-L Servo.cpp`. You can add this option as often as needed like `-L Servo.cpp -L Wire.cpp`
+Add necessary standard libraries to your project. Correct library path is automatically located by searching the libraries main .cpp-file. If you need the Servo library, you can add it just by `-L Servo.cpp`. You can add this option as often as needed like ` -L Servo.cpp -L Wire.cpp `
 
 ##### -o \<build-path\>
 
@@ -146,4 +146,29 @@ That's it! Now you have an environment with Arduino 1.6.1 sources and libraries 
 
 ### References
 
-to be done
+Here are some of the ressources which I consumed during this work.
+
+##### UDOO pages
+1. http://www.udoo.org/downloads/  
+1. https://github.com/UDOOboard/Arduino  
+1. http://www.udoo.org/forum/here-script-compile-upload-arduino-sketches-via-cli-t1822.html  
+1. http://www.udoo.org/forum/program-arduino-without-using-arduino-ide-t1642.html  
+1. http://www.udoo.org/forum/debian-jessie-rootfs-with-gpu-vpu-t693.html  
+1. http://www.udoo.org/forum/eclipse-ide-atmel-asf-alternative-arduino-ide-t1260.html  
+
+##### ARDUINO pages
+1. http://arduino.cc/en/Main/Software  
+1. https://github.com/arduino/Arduino/tree/1.6.1  
+
+##### MIXED internet pages
+1. https://github.com/amperka/ino  
+1. http://www.shumatech.com/web/products/bossa  
+1. http://www.atwillys.de/content/cc/using-custom-ide-and-system-library-on-arduino-due-sam3x8e/?lang=en  
+1. http://arduino.stackexchange.com/questions/1312/not-using-the-ide-and-understanding-the-compilation-linking-upload-process  
+1. http://www.linuxcircle.com/2013/05/15/programming-and-uploading-arduino-sketch-without-ide/  
+1. http://hardwarefun.com/tutorials/compiling-arduino-sketches-using-makefile  
+1. http://stackoverflow.com/questions/15184932/how-to-upload-source-code-to-arduino-from-bash  
+1. http://www.cloud-rocket.com/2014/05/programming-arduino-due-atmel-studio-asf/  
+
+<br>
+
