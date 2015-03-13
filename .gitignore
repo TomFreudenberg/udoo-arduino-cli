@@ -2,4 +2,5 @@
 /debian-binary
 /control.tar.gz
 /data.tar.xz
-*.deb
+/*.deb
+/*.deb.md5
