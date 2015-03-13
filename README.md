@@ -20,7 +20,7 @@ Let's assume that you want to run one of the famous blink examples on your Ardui
 Now you can compile and flash with this easy command:
 
 ````
-udoo-arduino-build --flash Blink.ino
+udoo-arduino-build --flash-sam Blink.ino
 ````
 
 All is done local on your UDOO, you do not need X or Java or ... :-)
@@ -51,7 +51,7 @@ Complete magic is handled by the script `udoo-arduino-build` which is also linke
 e.g. compile and flash `MySketch.ino` and add the standard `Servo` library to your build process:
 
 ````
-udoo-arduino-build --flash -L Servo.cpp MySketch.ino
+udoo-arduino-build --flash-sam -L Servo.cpp MySketch.ino
 ````
 
 **Flash usage:**
@@ -59,7 +59,7 @@ udoo-arduino-build --flash -L Servo.cpp MySketch.ino
 e.g. flash previously created `MySketch.bin`:
 
 ````
-udoo-arduino-build --flash MySketch.bin
+udoo-arduino-build --flash-sam MySketch.bin
 ````
 
 > The flash procedure is handled by included `bossac` utility and via the internal processors serial communication device (normally `/dev/ttymxc3`).
@@ -71,16 +71,16 @@ udoo-arduino-build --flash MySketch.bin
 There are some really useful cmdline options available for `udoo-arduino-build` script.
 
 ````
-udoo-arduino-build [-I <path>] [-L <library.cpp>] [-o <path> [--fast]] [--copy] [--flash] sketch.ino [<sources.cpp>]"
+udoo-arduino-build [-I <path>] [-L <library.cpp>] [-o <path> [--fast]] [--copy] [--flash-sam] sketch.ino [<sources.cpp>]"
 ````
+
+<br>
 
 ##### --help
 
 Show help and command usage info.
 
-##### --flash
-
-Run the flashing process after build or as action
+<br>
 
 ##### -I \<include-path\>
 
@@ -102,17 +102,37 @@ Fast is an addtional option to build process. Instead of rebuilding all sources 
 
 After a successful build of your sketch.ino the generated sketch.bin will be copied and backuped from your `build-path`to your sketch `project-path`. You can flash this binary on multiple boards or publish it to others.
 
-##### -D \<internal UART device for interprocessor communication\>
-
-If on any reason necessary you can change the default device `ttymcx3` when flashing your sketch.
-
 ##### -A \<arduino (ide) installation path\>
 
 If you do not use default installation of `udoo-arduino-cli` or want to try another build environment, you may change the base installation path.
 
+<br>
+
+##### --flash-sam
+
+Run the flashing process after build or as a single action. The Atmel SAM Flash will be erased before flashing and the CPU gets a reset finally. 
+
+##### --erase-sam
+
+Just erase the Atmel SAM Flash and reset its CPU. This has to be a single action.
+
+##### --reset-sam
+
+Just reset the Atmel SAM CPU. This has to be a single action.
+
+##### -D \<internal UART device for interprocessor communication\>
+
+If on any reason necessary you can change the default device `ttymcx3` when flashing your sketch.
+
+<br>
+
 ##### --no-arduino-headers
 
 To allow maximum control of the build process you can disable some magic like the appendixes for automatically compatibility. This option will prevent `include "Arduino.h"` headers.
+
+##### --no-fatal-warnings
+
+To allow maximum control of the build process you can allow linker to build binary even when there are undefined reference warnings.
 
 <br>
 

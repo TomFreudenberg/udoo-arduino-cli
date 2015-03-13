@@ -40,10 +40,13 @@ SAM3X_DEV="ttymxc3"
 OPT_USER_BUILD_PATH=false
 OPT_FAST_BUILD=false
 OPT_COPY_SKETCH_BIN=false
-OPT_FLASH_BINARY=false
+OPT_FLASH_SAM=false
+OPT_ERASE_SAM=false
+OPT_RESET_SAM=false
 
 # Flag defaults
 FLAG_ARDUINO_HEADERS=true
+FLAG_LD_FATAL_WARNINGS=true
 
 # Compiler options
 CMDLINE_ADDED_INC_PATH=""
@@ -52,24 +55,37 @@ CMDLINE_ADDED_ARDUINO_LIBS_FILES=""
 # Simple help information
 function __help () {
   echo "Usage for build:"
-  echo "  $(basename $0) [-I <path>] [-L <library.cpp>] [-o <path> [--fast]] [--copy] [--flash] sketch.ino [<sources.cpp>]"
+  echo "  $(basename $0) [-I <path>] [-L <library.cpp>] [-o <path> [--fast]] [--copy] [--flash-sam] sketch.ino [<sources.cpp>]"
   echo
   echo "Usage for flash:"
-  echo "  $(basename $0) --flash sketch.bin"
+  echo "  $(basename $0) --flash-sam sketch.bin"
   echo 
+  echo "Usage for erase:"
+  echo "  $(basename $0) --erase-sam"
+  echo 
+  echo "Usage for reset:"
+  echo "  $(basename $0) --reset-sam"
+  echo 
+  echo "> options for build process"
+  echo
   echo "          -o = use <path> for build process output"
   echo "      --fast = fast build, skip build for Arduino standard sources if exists"
   echo "          -I = add <path> to INCLUDES search path"
   echo "          -L = add reference and includes to standard <library.cpp>, e.g. Wire.cpp"
   echo "      --copy = copy sketch .bin file to project directory after build process"
-  echo "     --flash = erase and flash binary to SAM3X"
-  echo "          -D = UART device to SAM3X, default: <ttymxc3>"
   echo "          -A = Arduino installation base path, default: </usr/local/lib/udoo-arduino-cli>"
-  echo "      --help = this help info"
   echo
-  echo "  in addition there are some special options, to control gcc/g++ calls"
+  echo "> operations at Atmel SAM CPU"
   echo
-  echo "    --no-arduino-headers = do not automatically append the Arduino header files while compiling."
+  echo "     --flash-sam = erase, flash binary to SAM3X, reset"
+  echo "     --erase-sam = erase and reset"
+  echo "     --reset-sam = reset only"
+  echo "              -D = UART device to SAM3X, default: <ttymxc3>"
+  echo
+  echo "> in addition there are some special options, to control build process"
+  echo
+  echo "    --no-arduino-headers = do not automatically append the Arduino header files while compiling"
+  echo "     --no-fatal-warnings = do not break ld when getting undefined reference warnings"
   echo
   exit 1
 }
@@ -126,9 +142,17 @@ while [[ -n "${1}" ]]; do
       # set option flag
       OPT_COPY_SKETCH_BIN=true
       ;;
-    --flash)
+    --flash-sam)
       # set option flag
-      OPT_FLASH_BINARY=true
+      OPT_FLASH_SAM=true
+      ;;
+    --erase-sam)
+      # set option flag
+      OPT_ERASE_SAM=true
+      ;;
+    --reset-sam)
+      # set option flag
+      OPT_RESET_SAM=true
       ;;
     -D)
       # check mandatory argument
@@ -149,6 +173,10 @@ while [[ -n "${1}" ]]; do
     --no-arduino-headers)
       # disable Arduino.h
       FLAG_ARDUINO_HEADERS=false
+      ;;
+    --no-fatal-warnings)
+      # disable break on ld warnings
+      FLAG_LD_FATAL_WARNINGS=false
       ;;
     --help|-h)
       # show info
@@ -199,13 +227,19 @@ ARDUINO_LIBS_FILES=""
 SKETCH_INC_PATH=""
 
 # Test environment and options before start
-[[ -n "${SOURCE_FILES}" && -n "${BINARY_FILES}" ]] && __error "Error arguments: cannot specify source and binary files at same time!"
+[[ -n "${SOURCE_FILES}" && -n "${BINARY_FILES}" ]] && __error "Error arguments: not allowed to specify source and binary files at same time!"
 
-[[ -n "${BINARY_FILES}" && "${OPT_FLASH_BINARY}" != true ]] && __error "Error arguments: must call -f flash option when specify binary files!"
+[[ -n "${BINARY_FILES}" && "${OPT_FLASH_SAM}" != true ]] && __error "Error arguments: missing flash option when specify binary files!"
 
-[[ -z "${SOURCE_FILES}" && -z "${BINARY_FILES}" ]] && __error "Error missing arguments: no source or binary files specified!"
+[[ -z "${SOURCE_FILES}" && -z "${BINARY_FILES}" && "${OPT_FLASH_SAM}" == true ]] && __error "Error arguments: missing binary file on flash operation!"
+
+[[ -z "${SOURCE_FILES}" && -z "${BINARY_FILES}" && "${OPT_ERASE_SAM}" != true && "${OPT_RESET_SAM}" != true ]] && __error "Error missing arguments: no source or binary files specified!"
 
 [[ "${OPT_COPY_SKETCH_BIN}" == true && -z "${SOURCE_FILES}" ]] && __error "Error copy binary: option is only allowed when using build process!"
+
+[[ "${OPT_ERASE_SAM}" == true && -n "${SOURCE_FILES}" ]] && __error "Error arguments: erasing sam is not allowed when using build process!"
+
+[[ "${OPT_RESET_SAM}" == true && -n "${SOURCE_FILES}" ]] && __error "Error arguments: resetting sam is not allowed when using build process!"
 
 [[ -d "${ARDUINO_BASE_DIR}" ]] || __error "Error installation: Arduino installation not available [${ARDUINO_BASE_DIR}]!"
 
@@ -348,8 +382,13 @@ function __build () {
     fi
   done
 
+  # clear additional directives
+  LDFLAGS_EXTENDED=""
+  # set additional directives
+  [[ "${FLAG_LD_FATAL_WARNINGS}" == true ]] && LDFLAGS_EXTENDED="${LDFLAGS_EXTENDED} -Wl,--fatal-warnings"
+  # run thru link process
   echo "LD (Link OBJ files)"
-  ${ARDUINO_HW_TOOLS_GCC_DIR}/arm-none-eabi-g++ -Os -Wl,--gc-sections -mcpu=cortex-m3 -T${ARDUINO_HW_SAM_BOARD_DIR}/linker_scripts/gcc/flash.ld -Wl,-Map,${BUILD_PATH}/${SKETCH_SRC_FILENAME}.map -o ${BUILD_PATH}/${SKETCH_NAME}.elf -L${BUILD_PATH} -lm -lgcc -mthumb -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--entry=Reset_Handler -Wl,--unresolved-symbols=report-all -Wl,--warn-common -Wl,--warn-section-align -Wl,--warn-unresolved-symbols -Wl,--start-group ${BUILD_PATH}/syscalls_sam3.c.o ${BUILD_PATH}/${SKETCH_SRC_FILENAME}.o ${ARDUINO_HW_SAM_BOARD_DIR}/libsam_sam3x8e_gcc_rel.a ${BUILD_PATH}/${SKETCH_SRC_FILENAME}.a ${BUILD_PATH}/arduino.a -Wl,--end-group || exit 1
+  ${ARDUINO_HW_TOOLS_GCC_DIR}/arm-none-eabi-g++ -Os -Wl,--gc-sections -mcpu=cortex-m3 -T${ARDUINO_HW_SAM_BOARD_DIR}/linker_scripts/gcc/flash.ld -Wl,-Map,${BUILD_PATH}/${SKETCH_SRC_FILENAME}.map -o ${BUILD_PATH}/${SKETCH_NAME}.elf -L${BUILD_PATH} -lm -lgcc -mthumb -Wl,--cref -Wl,--check-sections -Wl,--gc-sections -Wl,--entry=Reset_Handler -Wl,--unresolved-symbols=report-all -Wl,--warn-common -Wl,--warn-section-align -Wl,--warn-unresolved-symbols ${LDFLAGS_EXTENDED} -Wl,--start-group ${BUILD_PATH}/syscalls_sam3.c.o ${BUILD_PATH}/${SKETCH_SRC_FILENAME}.o ${ARDUINO_HW_SAM_BOARD_DIR}/libsam_sam3x8e_gcc_rel.a ${BUILD_PATH}/${SKETCH_SRC_FILENAME}.a ${BUILD_PATH}/arduino.a -Wl,--end-group || exit 1
 
   echo "BIN (Build binary file for ${SKETCH_NAME}.bin)"
   ${ARDUINO_HW_TOOLS_GCC_DIR}/arm-none-eabi-objcopy -O binary ${BUILD_PATH}/${SKETCH_NAME}.elf ${BUILD_PATH}/${SKETCH_NAME}.bin || exit 1
@@ -372,12 +411,26 @@ function __copy_binary () {
   echo
 }
 
-function __flash () {
+function __flash_sam () {
   # test count of binaries to flash
   [[ "$#" -eq 1 ]] || __error "Flash error: can not flash more or less than 1 binary file!"
   # run thru flash process
   echo "Erasing SAM3X and flashing ${1} ..."
   ${ARDUINO_HW_TOOLS_DIR}/bossac --port=${SAM3X_DEV} -U false -e -w -v -b "${1}" -R
+  echo
+}
+
+function __erase_sam () {
+  # run thru erase process
+  echo "Erasing and resetting SAM3X ..."
+  ${ARDUINO_HW_TOOLS_DIR}/bossac --port=${SAM3X_DEV} -U false -e -b -R
+  echo
+}
+
+function __reset_sam () {
+  # run thru reset process
+  echo "Resetting SAM3X ..."
+  ${ARDUINO_HW_TOOLS_DIR}/bossac --port=${SAM3X_DEV} -U false -b -R
   echo
 }
 
@@ -409,7 +462,13 @@ mkdir -p "${BUILD_PATH}" && [[ -d "${BUILD_PATH}" ]] || __error "Error build des
 [[ "${OPT_COPY_SKETCH_BIN}" == true ]] && __copy_binary ${BINARY_FILES}
 
 # check action to flash
-[[ "${OPT_FLASH_BINARY}" == true ]] && __flash ${BINARY_FILES}
+[[ "${OPT_ERASE_SAM}" == true ]] && __erase_sam
+
+# check action to flash
+[[ "${OPT_RESET_SAM}" == true ]] && __reset_sam
+
+# check action to flash
+[[ "${OPT_FLASH_SAM}" == true ]] && __flash_sam ${BINARY_FILES}
 
 # finished
 exit 0
