@@ -292,6 +292,8 @@ function __build () {
   for src_file in $*; do
     # extract filename for output file
     obj_file=$(basename "${src_file}.o")
+    # when using g++ the suffix .ino is not recognized, so we need to add an compiler directive
+    [[ "${src_file:(-4)}" == ".ino" ]] && src_file="-x c++ ${src_file}"
     # run g++
     ${ARDUINO_HW_TOOLS_GCC_DIR}/arm-none-eabi-g++ ${CFLAGS_1} ${CFLAGS_2} ${CFLAGS_3} ${CFLAGS_EXTENDED} ${ARDUINO_INC_PATH} ${ARDUINO_LIBS_INC_PATH} ${SKETCH_INC_PATH} ${src_file} -o ${BUILD_PATH}/${obj_file} || exit 1
     # on success add object file
