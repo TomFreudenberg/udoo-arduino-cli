@@ -84,11 +84,11 @@ Run the flashing process after build or as action
 
 ##### -I \<include-path\>
 
-Append additional folders to INCLUDES path for compiling your sketch.ino.
+Append additional folders to INCLUDES path for compiling your sketch.ino. Path may be relative, if you divided your source into several pieces, you may include the project folder like ` -I . `
 
 ##### -L \<library.cpp\>
 
-Add necessary standard libraries to your project. Correct library path is located by searching the libraries main .cpp-file.
+Add necessary standard libraries to your project. Correct library path is automatically located by searching the libraries main .cpp-file. If you need the Servo library, you can add it just by `-L Servo.cpp`. You can add this option as often as needed like `-L Servo.cpp -L Wire.cpp`
 
 ##### -o \<build-path\>
 
@@ -109,6 +109,16 @@ If on any reason necessary you can change the default device `ttymcx3` when flas
 ##### -A \<arduino (ide) installation path\>
 
 If you do not use default installation of `udoo-arduino-cli` or want to try another build environment, you may change the base installation path.
+
+##### --no-arduino-headers
+
+To allow maximum control of the build process you can disable some magic like the appendixes for automatically compatibility. This option will prevent `include "Arduino.h"` headers.
+
+<br>
+
+### Compatibility
+
+This is 100% Arduino IDE, so it is 100% compatible to your existing sources. The Arduino IDE does some magic before running the compile process and so we do it too - that is: Adding references like `#include <Arduino.h>` of standard Arduino headers so that you may use code like `digitalWrite(13, HIGH);` without changing your codes. All should be getting compiled as in Arduino IDE.
 
 <br>
 
