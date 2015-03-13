@@ -2,7 +2,7 @@
 
 It's for anybody who is looking for a headless command line compiler and flasher for your UDOO board to build and upload your Arduino sketches directly and internally from inside a UDOO Linux shell.
 
-![udoo-arduino-cli-overview-screenshot](https://cloud.githubusercontent.com/assets/410087/6635931/662aaf2c-c96b-11e4-849d-a7577223e331.png)
+![udoo-arduino-cli-overview-screenshot](https://cloud.githubusercontent.com/assets/410087/6638846/5ba1c97c-c98a-11e4-885a-11c362930203.png)
 
 <br>
 
@@ -119,6 +119,12 @@ To allow maximum control of the build process you can disable some magic like th
 ### Compatibility
 
 This is 100% Arduino IDE, so it is 100% compatible to your existing sources. The Arduino IDE does some magic before running the compile process and so we do it too - that is: Adding references like `#include <Arduino.h>` of standard Arduino headers so that you may use code like `digitalWrite(13, HIGH);` without changing your codes. All should be getting compiled as in Arduino IDE.
+
+<br>
+
+### Use clone from this repository
+
+If you wish to create the deb package by yourself or want to make some changes, you just can clone this repo to your development machine. I added a script `build-dpkg-deb` and that will generate a debian installer package from within your cloned filespace. So you still can publish your changes easily all the time to your UDOO board(s).
 
 <br>
 
