@@ -41,7 +41,6 @@ OPT_USER_BUILD_PATH=false
 OPT_FAST_BUILD=false
 OPT_COPY_SKETCH_BIN=false
 OPT_FLASH_BINARY=false
-OPT_NO_CLEAN_BUILD_PATH=false
 
 # Compiler options
 CMDLINE_ADDED_INC_PATH=""
@@ -50,7 +49,7 @@ CMDLINE_ADDED_ARDUINO_LIBS_FILES=""
 # Simple help information
 function __help () {
   echo "Usage for build:"
-  echo "  $(basename $0) [-I <path>] [-L <library.cpp>] [-o <path> [--fast]] [--copy] [--no-clean] [--flash] sketch.ino [<sources.cpp>]"
+  echo "  $(basename $0) [-I <path>] [-L <library.cpp>] [-o <path> [--fast]] [--copy] [--flash] sketch.ino [<sources.cpp>]"
   echo
   echo "Usage for flash:"
   echo "  $(basename $0) --flash sketch.bin"
@@ -63,7 +62,6 @@ function __help () {
   echo "     --flash = erase and flash binary to SAM3X"
   echo "          -D = UART device to SAM3X, default: <ttymxc3>"
   echo "          -A = Arduino installation base path, default: </usr/local/lib/udoo-arduino-cli>"
-  echo "  --no-clean = do not purge temp build directory after process on success and errors"
   echo "      --help = this help info"
   echo
   exit 1
@@ -141,10 +139,6 @@ while [[ -n "${1}" ]]; do
       # skip additional argument
       shift 1
       ;;
-    --no-clean)
-      # set option flag
-      OPT_NO_CLEAN_BUILD_PATH=true
-      ;;
     --help|-h)
       # show info
       __help
@@ -205,10 +199,6 @@ SKETCH_INC_PATH=""
 [[ -d "${ARDUINO_BASE_DIR}" ]] || __error "Error installation: Arduino installation not available [${ARDUINO_BASE_DIR}]!"
 
 [[ -c "/dev/${SAM3X_DEV}" ]] || __error "Error device: UART device to SAM3X does not exist [${SAM3X_DEV}]!"
-
-[[ "${OPT_NO_CLEAN_BUILD_PATH}" == true && "${OPT_USER_BUILD_PATH}" == true ]] && __error "No clean build path error: option is only allowed when using temporary build path!"
-
-[[ "${OPT_NO_CLEAN_BUILD_PATH}" == true && -z "${SOURCE_FILES}" ]] && __error "No clean build path error: option is only allowed when using build process!"
 
 # Test for source files and project main file
 for src_file in ${SOURCE_FILES}; do
@@ -406,8 +396,8 @@ function __cleanup() {
   for sig in 0 1 2 3 6 14 15 EXIT; do
     trap - $sig
   done
-  # check to remove build path
-  [[ -n "${SOURCE_FILES}" && "${OPT_USER_BUILD_PATH}" != true && "${OPT_NO_CLEAN_BUILD_PATH}" != true ]] && rm -rf "${BUILD_PATH}"
+  # check to remove build path if had compiled sources and not had given a user build path
+  [[ -n "${SOURCE_FILES}" && "${OPT_USER_BUILD_PATH}" != true ]] && rm -rf "${BUILD_PATH}"
   # Skript beenden
   exit $EXIT_CODE
 }
