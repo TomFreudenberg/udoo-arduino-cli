@@ -279,12 +279,20 @@ done
 # Try to find standard libraries to include and build if used by sketch. Normal libraries are
 # organized at path <arduino>/libraries/<name>/src/<name>.(h|cpp) or at hardware path like
 # <arduino>/hardware/arduino/libraries/<name>/<name>.(h|cpp). So check for "src" sub-path.
+# Additionally search for external libraries in added inc paths
 for std_lib_file in ${CMDLINE_ADDED_ARDUINO_LIBS_FILES}; do
   std_lib_files=$(find ${ARDUINO_BASE_DIR} -type f -path '*/libraries/*' -name "${std_lib_file}")
   if [[ -n "${std_lib_files}" ]]; then
     ARDUINO_LIBS_FILES="${ARDUINO_LIBS_FILES} ${std_lib_files}"
   else
-    __error "Standard library error: could not locate library path for [${std_lib_file}]!"
+    for inc_path in ${CMDLINE_ADDED_INC_PATH}; do
+      std_lib_files=$(find ${incpath} -type f -name "${std_lib_file}")
+      if [[ -n "${std_lib_files}" ]]; then
+        ARDUINO_LIBS_FILES="${ARDUINO_LIBS_FILES} ${std_lib_files}"
+        break
+      fi
+      __error "Standard library error: could not locate library path for [${std_lib_file}]!"
+    done
   fi
 done
 
