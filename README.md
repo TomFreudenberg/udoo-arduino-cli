@@ -88,7 +88,9 @@ Append additional folders to INCLUDES path for compiling your sketch.ino. Path m
 
 ##### -L \<library.cpp\>
 
-Add necessary standard libraries to your project. Correct library path is automatically located by searching the libraries main .cpp-file. If you need the Servo library, you can add it just by `-L Servo.cpp`. You can add this option as often as needed like ` -L Servo.cpp -L Wire.cpp `
+Add necessary standard libraries to your project. Correct library path is automatically located by searching the libraries main .cpp-file. If you need the Servo library, you can add it just by `-L Servo.cpp`. You can add this option as often as needed like ` -L Servo.cpp -L Wire.cpp `.
+
+If you need to include libraries from local or project directories as well, you can add also relative librariy files like ` -L mylibs/motor/Motor.cpp `
 
 ##### -o \<build-path\>
 

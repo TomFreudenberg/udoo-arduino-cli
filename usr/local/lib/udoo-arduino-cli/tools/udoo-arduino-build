@@ -279,23 +279,32 @@ done
 # Try to find standard libraries to include and build if used by sketch. Normal libraries are
 # organized at path <arduino>/libraries/<name>/src/<name>.(h|cpp) or at hardware path like
 # <arduino>/hardware/arduino/libraries/<name>/<name>.(h|cpp). So check for "src" sub-path.
-for std_lib_file in ${CMDLINE_ADDED_ARDUINO_LIBS_FILES}; do
-  std_lib_files=$(find ${ARDUINO_BASE_DIR} -type f -path '*/libraries/*' -name "${std_lib_file}")
-  if [[ -n "${std_lib_files}" ]]; then
-    ARDUINO_LIBS_FILES="${ARDUINO_LIBS_FILES} ${std_lib_files}"
+# If "src" was given with path, try to locate library at relative directory
+for lib_file in ${CMDLINE_ADDED_ARDUINO_LIBS_FILES}; do
+  # check wether filename only or path was defined
+  if [[ "$(basename $lib_file)" == "${lib_file}" ]]; then
+    # try to locate path for standard library
+    lib_file_path=$(find ${ARDUINO_BASE_DIR} -type f -path '*/libraries/*' -name "${lib_file}")
   else
-    __error "Standard library error: could not locate library path for [${std_lib_file}]!"
+    # take path as relative path to library
+    lib_file_path="${lib_file}"
+  fi
+  # test if library exists
+  if [[ -n "${lib_file_path}" ]]; then
+    ARDUINO_LIBS_FILES="${ARDUINO_LIBS_FILES} ${lib_file_path}"
+  else
+    __error "Standard library error: could not locate library path for [${lib_file}]!"
   fi
 done
 
 # build unique list of include paths for libs
-for unique_std_lib_path in $(
+for unique_lib_path in $(
 (
-  for std_lib_file in ${ARDUINO_LIBS_FILES}; do
-    echo $(dirname "${std_lib_file}")
+  for lib_file in ${ARDUINO_LIBS_FILES}; do
+    echo $(dirname "${lib_file}")
   done
 ) | sort --unique); do
-  ARDUINO_LIBS_INC_PATH="${ARDUINO_LIBS_INC_PATH} -I${unique_std_lib_path}"
+  ARDUINO_LIBS_INC_PATH="${ARDUINO_LIBS_INC_PATH} -I${unique_lib_path}"
 done
 
 # append to list if objects
