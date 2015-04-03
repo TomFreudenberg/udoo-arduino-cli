@@ -1,5 +1,5 @@
 Package: udoo-arduino-cli
-Version: 1.6.1-pre1
+Version: 1.6.1-pre2
 Section: electronics
 Maintainer: Tom Freudenberg <ppa-manager@localhost.domain>
 Homepage: https://github.com/TomFreudenberg/udoo-arduino-cli
