@@ -439,7 +439,12 @@ function __erase_sam () {
 function __reset_sam () {
   # run thru reset process
   echo "Resetting SAM3X ..."
-  ${ARDUINO_HW_TOOLS_DIR}/bossac --port=${SAM3X_DEV} -U false -b -R
+  # hard reset through pin0
+  echo "out" > /sys/class/gpio/gpio0/direction
+  echo 0 > /sys/class/gpio/gpio0/value
+  sleep 0.1
+  echo 1 > /sys/class/gpio/gpio0/value
+  echo "in" > /sys/class/gpio/gpio0/direction
   echo
 }
 
@@ -462,7 +467,7 @@ for sig in 0 1 2 3 6 14 15 EXIT; do
 done
 
 # create and check build path
-[[ -n "${SOURCE_FILES}" ]] && mkdir -p "${BUILD_PATH}" && [[ -d "${BUILD_PATH}" ]] || __error "Error build destination: path not available or accesible [${BUILD_PATH}]!"
+[[ -z "${SOURCE_FILES}" ]] || ( [[ -n "${SOURCE_FILES}" ]] && mkdir -p "${BUILD_PATH}" && [[ -d "${BUILD_PATH}" ]] ) || __error "Error build destination: path not available or accesible [${BUILD_PATH}]!"
 
 # check action to build
 [[ -n "${SOURCE_FILES}" ]] && __build ${SOURCE_FILES}
