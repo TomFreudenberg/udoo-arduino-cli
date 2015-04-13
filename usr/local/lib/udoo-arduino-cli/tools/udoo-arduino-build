@@ -425,14 +425,14 @@ function __flash_sam () {
   [[ "$#" -eq 1 ]] || __error "Flash error: can not flash more or less than 1 binary file!"
   # run thru flash process
   echo "Erasing SAM3X and flashing ${1} ..."
-  ${ARDUINO_HW_TOOLS_DIR}/bossac --port=${SAM3X_DEV} -U false -e -w -v -b "${1}" -R
+  ${ARDUINO_HW_TOOLS_DIR}/bossac --port=${SAM3X_DEV} -U false -e -w -v -b "${1}" -R || exit 1
   echo
 }
 
 function __erase_sam () {
   # run thru erase process
   echo "Erasing and resetting SAM3X ..."
-  ${ARDUINO_HW_TOOLS_DIR}/bossac --port=${SAM3X_DEV} -U false -e -b -R
+  ${ARDUINO_HW_TOOLS_DIR}/bossac --port=${SAM3X_DEV} -U false -e -b -R || exit 1
   echo
 }
 
@@ -448,6 +448,37 @@ function __reset_sam () {
   echo
 }
 
+# if error in build process or flashing SAM3x
+# it may be in case of some missing system components
+# like updated or missing libmpc.so and ld-linux.so
+# simple do some tests before user has to search long time
+function __check_system_dependencies() {
+  # check libmpc.so.2 for build process
+  if [[ ! -f "$(ls /usr/lib/arm-linux-*/libmpc.so.2 2>/dev/null 3>/dev/null)" ]]; then
+    echo
+    echo "Warning: detected missing reference of libmpc.so.2"
+    echo "Read details at github: https://github.com/TomFreudenberg/udoo-arduino-cli/issues/3"
+    # search for library
+    LIBMPC_SO_X="$(ls /usr/lib/arm-linux-*/libmpc.so.? 2>/dev/null 3>/dev/null | sort --reverse | head -n 1)"
+    # check that still a newer library exist
+    [[ -z "${LIBMPC_SO_X}" ]] && __error "Auto-fix error: can not locate any libmpc.so.? release!"
+    # create symbolic link to newer library
+    echo "Run command to fix:" sudo ln -v -s "$(basename ${LIBMPC_SO_X})" "$(dirname ${LIBMPC_SO_X})/libmpc.so.2"
+  fi
+  # check ld-linux.so.3
+  if [[ ! -f "/lib/ld-linux.so.3" ]]; then
+    echo
+    echo "Warning: detected missing reference of ld-linux.so.3"
+    echo "Read details at github: https://github.com/TomFreudenberg/udoo-arduino-cli/issues/4"
+    # search for library
+    LD_LINUX_SO_X="$(ls /lib/arm-linux-*/ld-linux.so.? 2>/dev/null 3>/dev/null | sort --reverse | head -n 1)"
+    # check that still a newer library exist
+    [[ -z "${LD_LINUX_SO_X}" ]] && __error "Auto-fix error: can not locate any ld-linux.so.? release!"
+    # create symbolic link to newer library
+    echo "Run command to fix:" sudo ln -v -s "$(basename $(dirname ${LD_LINUX_SO_X}))/$(basename ${LD_LINUX_SO_X})" "/lib/ld-linux.so.3"
+  fi
+}
+
 function __cleanup() {
   # save exit code
   EXIT_CODE=$?
@@ -457,6 +488,10 @@ function __cleanup() {
   done
   # check to remove build path if had compiled sources and not had given a user build path
   [[ -n "${SOURCE_FILES}" && "${OPT_USER_BUILD_PATH}" != true ]] && rm -rf "${BUILD_PATH}"
+  # test error for original exit_code
+  [[ $EXIT_CODE != 0 ]] && __check_system_dependencies
+  # empty text line
+  echo
   # Skript beenden
   exit $EXIT_CODE
 }
