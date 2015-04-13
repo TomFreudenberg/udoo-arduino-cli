@@ -1,5 +1,5 @@
-udoo-arduino-cli (1.6.1-pre2) Debian and compatible; urgency=normal
+udoo-arduino-cli (1.6.1-pre3) Debian and compatible; urgency=normal
 
   * Udoo console compiler for arduino sketches
 
- -- Tom Freudenberg <ppa-manager@localhost.domain>  Fri, 03 Apr 2015 21:00:00 +0100
+ -- Tom Freudenberg <ppa-manager@localhost.domain>  Mon, 13 Apr 2015 03:00:00 +0200
